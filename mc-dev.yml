@@ -1,0 +1,162 @@
+server:
+  port: 8509
+  tomcat:
+    accept-count: 1000
+    max-connections: 1000
+    max-threads: 500
+
+logging:
+  level:
+    org.springframework.web.servlet.DispatcherServlet: DEBUG
+    com.*.mapper: DEBUG
+    com.migu: DEBUG
+  config: classpath:log4j2-dev.yml
+
+mybatis:
+  mapperLocations:
+    - classpath*:sqlmap/*Mapper.xml
+  type-aliases-package:
+     org.springboot.sample.entity
+
+#influxdb配置
+management.metrics:
+  enable:
+    jvm: false  #关闭自动生成的度量数据
+    tomcat: false
+    logback: false
+    process: false
+    system: false
+    spring: false
+  export:
+    datadog:
+      enabled: false
+      apiKey: 6051158f9fa816ae7bca4d6a9b07a05a
+      step: 30s
+      uri: http://10.181.12.12:28301/datadog
+      host-tag: wbg.example.com
+    influx:
+      enabled: false  #开启influxdb输出
+      auto-create-db: true
+      db: ocean      #设置库名
+      step: 60s      #数据上报时间间隔为1分钟
+      uri: http://10.181.12.72:8086   #influxdb 地址
+      readTimeout: 30s
+      batchSize: 1000
+      password: Tele4influx&678    #influxdb  密码
+      user-name: teleinflux    #influxdb  用户名
+
+redis:
+  cluster:
+    nodes: 10.21.20.228:12001,10.21.20.228:12002,10.21.20.228:12003,10.21.20.228:12004,10.21.20.228:12005,10.21.20.228:12006
+    timeout: 2000
+    maxAttempts: 5
+    maxWaitMillis: -1
+    maxTotal: 8
+    minIdle: 0
+    maxIdle: 888
+login:
+    pre.url: https://passport.migu.cn/login
+    default.sourceId: 205000
+
+partnerLogin:
+  encode-key: csautomaticlogin
+
+redisswitch_on: true
+kafkaswitch_on: true
+cutoverkafkaswitch_on: true
+identicalProfile_switch_on: false
+
+kafka:
+  topic:
+    user: userinfo-user
+    user.music: userinfo-user-music
+    updateUserInfoForAudit: userinfo-updateUserInfoForAudit
+    notifyAuditResult: userinfo-notifyAuditResult
+    deleteImage: userinfo-deleteImageUrl
+  logger:
+    async:
+      info: kafkaLoggerAsyncInfo
+      error: kafkaLoggerAsyncError
+    updateUserInfoForAuditMsg: kafkaLoggerUpdateUserInfoForAudit
+    updateUserInfoForAuditErr: kafkaLoggerUpdateUserInfoForAuditErr
+  consumer:
+    servers: 10.21.20.228:9042,10.21.20.228:9043,10.21.20.228:9044
+    retries: 0
+    batchSize: 4096
+    bufferMemory: 40960
+    groupId: usergroup1
+    autoCommitInterval: 5000
+    sessionTimeout: 10000
+    autoOffsetReset: earliest
+    concurrency: 1
+    pollTimeout: 3000
+  producer:
+    servers: 10.21.20.228:9042,10.21.20.228:9043,10.21.20.228:9044
+    retries: 0
+    batchSize: 16384
+    bufferMemory: 33554432
+    acks: all
+    partitionerClass: com.migu.pinkstone.config.UserInfoPartitioner
+
+seckafka:
+  topic:
+    user: userinfo-user
+    updateUserInfoForAudit: userinfo-updateUserInfoForAudit
+    notifyAuditResult: userinfo-notifyAuditResult
+    userSync: userinfo-user_sync
+    deleteImage: userinfo-deleteImageUrl
+  logger:
+    async:
+      info: kafkaLoggerAsyncInfo
+      error: kafkaLoggerAsyncError
+    marketError: MARKETKAFKAERROR
+    marketMessage: MARKETKAFKAMESSAGE
+    updateUserInfoForAuditMsg: kafkaLoggerUpdateUserInfoForAudit
+    updateUserInfoForAuditErr: kafkaLoggerUpdateUserInfoForAuditErr
+  consumer:
+    servers: 10.21.20.228:9042,10.21.20.228:9043,10.21.20.228:9044
+    retries: 0
+    batchSize: 4096
+    bufferMemory: 40960
+    groupId: usergroup1
+    autoCommitInterval: 5000
+    sessionTimeout: 10000
+    autoOffsetReset: latest
+    concurrency: 1
+    pollTimeout: 3000
+  producer:
+    servers: 10.21.20.228:9042,10.21.20.228:9043,10.21.20.228:9044
+    retries: 0
+    batchSize: 16384
+    bufferMemory: 33554432
+    acks: all
+    partitionerClass: com.migu.pinkstone.config.UserInfoPartitioner
+
+migu-metrics:
+   period: 60
+   url: http://localhost:8765/datadog
+   enabled: false
+   tags:
+        - migu_server:dropmetrics.local
+   prefix: migu.framework.request.local
+   connectTimeout: 6000
+   socketTimeout: 3000
+   enableHystrixMetrics: false
+   
+logging-file-name: updateUserInfoErrorLog
+  
+  
+---
+spring:
+  userBusinessDatasource:
+      url: jdbc:mysql://10.21.20.228:8067/usr?relaxAutoCommit=true&zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&autoReconnect=true
+      username: usr
+      password: usr
+      type: com.alibaba.druid.pool.DruidDataSource
+      driver-class-name: com.mysql.jdbc.Driver
+  monitorDataSource:
+      url: jdbc:mysql://10.21.20.228:8067/monitor_log
+      username: monitor_log
+      password: monitor_log_123
+      type: com.alibaba.druid.pool.DruidDataSource
+      driver-class-name: com.mysql.jdbc.Driver
