@@ -4,5 +4,5 @@ server:
     accept-count: 1000
     max-connections: 1000
     max-threads: 500
- name:
-   age: 21
+name:
+  age: 21 
