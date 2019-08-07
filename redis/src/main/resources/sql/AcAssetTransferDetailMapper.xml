@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mc.redis.configuration.mapper.AcAssetTransferDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.mc.redis.configuration.bean.AcAssetTransferDetail" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="task_id" property="taskId" jdbcType="VARCHAR" />
+    <result column="source_user_id" property="sourceUserId" jdbcType="VARCHAR" />
+    <result column="target_user_id" property="targetUserId" jdbcType="VARCHAR" />
+    <result column="operator" property="operator" jdbcType="VARCHAR" />
+    <result column="product_line" property="productLine" jdbcType="VARCHAR" />
+    <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
+    <result column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP" />
+    <result column="state" property="state" jdbcType="TINYINT" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.mc.redis.configuration.bean.AcAssetTransferDetail" extends="BaseResultMap" >
+    <result column="transfer_result" property="transferResult" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, task_id, source_user_id, target_user_id, operator, product_line, gmt_create, 
+    gmt_modified, state
+  </sql>
+  <sql id="Blob_Column_List" >
+    transfer_result
+  </sql>
+  <select id="selectAll" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from ac_asset_transfer_detail limit 10000
+  </select>
+</mapper>

@@ -1,0 +1,1051 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mc.redis.configuration.mapper.AcPersonalBookMapper">
+    <resultMap id="BaseResultMap" type="com.mc.redis.configuration.bean.AcPersonalBook">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="acct_book_id" jdbcType="VARCHAR" property="acctBookId"/>
+        <result column="currency_type_id" jdbcType="VARCHAR" property="currencyTypeId"/>
+        <result column="balance" jdbcType="DECIMAL" property="balance"/>
+        <result column="card_batch_id" jdbcType="VARCHAR" property="cardBatchId"/>
+        <result column="external_id" jdbcType="VARCHAR" property="externalId"/>
+        <result column="is_multi" jdbcType="TINYINT" property="isMulti"/>
+        <result column="is_defer" jdbcType="TINYINT" property="isDefer"/>
+        <result column="activity_id" jdbcType="VARCHAR" property="activityId"/>
+        <result column="activity_name" jdbcType="VARCHAR" property="activityName"/>
+        <result column="acct_status" jdbcType="VARCHAR" property="acctStatus"/>
+        <result column="reserved1" jdbcType="VARCHAR" property="reserved1"/>
+        <result column="reserved2" jdbcType="VARCHAR" property="reserved2"/>
+        <result column="reserved3" jdbcType="VARCHAR" property="reserved3"/>
+        <result column="reserved4" jdbcType="VARCHAR" property="reserved4"/>
+        <result column="channel_id" jdbcType="VARCHAR" property="channelId"/>
+        <result column="gmt_expiry" jdbcType="TIMESTAMP" property="gmtExpiry"/>
+        <result column="gmt_effective" jdbcType="TIMESTAMP" property="gmtEffective"/>
+        <result column="gmt_init_expiry" jdbcType="TIMESTAMP" property="gmtInitExpiry"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_update" jdbcType="TIMESTAMP" property="gmtUpdate"/>
+        <result column="state" jdbcType="TINYINT" property="state"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.mc.redis.configuration.bean.AcPersonalBook">
+        <result column="ext_info" jdbcType="LONGVARCHAR" property="extInfo"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, user_id, acct_book_id, currency_type_id, balance, card_batch_id, external_id,
+    is_multi, is_defer, activity_id, activity_name, acct_status, reserved1, reserved2,
+    reserved3, reserved4, channel_id, gmt_expiry, gmt_effective, gmt_init_expiry, gmt_create,
+    gmt_update, state
+    </sql>
+    <sql id="Blob_Column_List">
+        ext_info
+    </sql>
+
+    <select id="selectByUserIdAndCurrencyTypeId" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from ac_personal_book
+        where user_id = #{userIdContainU} and acct_status = 1 and gmt_expiry > now()
+        <if test="currencyTypeId !=null and currencyTypeId != ''">
+        and
+        currency_type_id = #{currencyTypeId}
+        </if>
+        and state = 1 limit 2000
+    </select>
+
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from ac_personal_book
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="selectByPrimaryListKey" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from ac_personal_book
+        where state = '1'
+        <if test='userId != null and  userId != ""'>
+            AND user_id = #{userId}
+        </if>
+        <if test='acctBookId != null and  acctBookId != "" '>
+            AND acct_book_id = #{acctBookId}
+        </if>
+        <if test="currencyTypeIds != null and currencyTypeIds.size()>0">
+            AND currency_type_id IN
+            <foreach collection="currencyTypeIds" index="index" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test='begTime != null and begTime != "" '>
+            AND gmt_create &gt;= #{begTime}
+        </if>
+        <if test='endTime != null and endTime != ""'>
+            AND gmt_create &lt;= #{endTime}
+        </if>
+        <if test='effectStatus == "1"'>
+            AND gmt_effective &lt; now()
+        </if>
+        <if test='effectStatus == "2"'>
+            AND gmt_effective &gt; now()
+        </if>
+        <if test='expireStatus == "1"'>
+            AND gmt_expiry &lt; now()
+        </if>
+        <if test='expireStatus == "2"'>
+            AND gmt_expiry &gt; now()
+        </if>
+        <if test='balanceStatus == "1"'>
+            AND balance &gt; 0
+        </if>
+        <if test='balanceStatus == "2"'>
+            AND balance = 0
+        </if>
+        ORDER BY  gmt_expiry ASC
+
+        <if test='startNum != null and endNum != null'>
+            limit #{startNum} , #{endNum}
+        </if>
+    </select>
+
+    <select id="selectByPrimaryListKeyVideo" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from ac_personal_book
+        where state = '1'
+        <if test='userId != null and  userId != ""'>
+            AND user_id = #{userId}
+        </if>
+        <if test='acctBookId != null and  acctBookId != "" '>
+            AND acct_book_id = #{acctBookId}
+        </if>
+        <if test="currencyTypeIds != null and currencyTypeIds.size()>0">
+            AND currency_type_id IN
+            <foreach collection="currencyTypeIds" index="index" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test='begTime != null and begTime != "" '>
+            AND gmt_create &gt;= #{begTime}
+        </if>
+        <if test='endTime != null and endTime != ""'>
+            AND gmt_create &lt;= #{endTime}
+        </if>
+        <if test='effectStatus == "1"'>
+            AND gmt_effective &lt; now()
+        </if>
+        <if test='effectStatus == "2"'>
+            AND gmt_effective &gt; now()
+        </if>
+        <if test='expireStatus == "1"'>
+            AND gmt_expiry &lt; now()
+        </if>
+        <if test='expireStatus == "2"'>
+            AND gmt_expiry &gt; now()
+        </if>
+        <if test='balanceStatus == "1"'>
+            AND balance &gt; 0
+        </if>
+        <if test='balanceStatus == "2"'>
+            AND balance = 0
+        </if>
+        ORDER BY  gmt_expiry ASC
+
+        limit 2000
+
+    </select>
+
+    <select id="selectByAcctBookByUserId" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        from ac_personal_book
+        where state = '1' AND acct_status=1  and gmt_expiry > now()
+        <if test='userId != null and  userId != ""'>
+            AND user_id = #{userId}
+        </if> limit 2000
+    </select>
+
+    <select id="selectAcctBookByUserId" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        from ac_personal_book
+        where state = '0'
+        <if test='userId != null and  userId != ""'>
+            AND user_id = #{userId}
+        </if>
+    </select>
+
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        DELETE FROM ac_personal_book
+        WHERE id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <delete id="deleteBycurrencyTypeIdByUserId" parameterType="java.lang.String">
+        DELETE FROM ac_personal_book
+        WHERE   user_id = #{userId}
+           AND is_multi = #{isMulti}
+    </delete>
+
+    <!-- 账本迁移，物理删除老账本信息 -->
+    <delete id="deleteRecordByUserId">
+        DELETE FROM ac_personal_book
+        <where>
+            user_id = #{userId, jdbcType=VARCHAR}
+            <if test="isMulti != null">
+                AND is_multi = #{isMulti, jdbcType=VARCHAR}
+            </if>
+        </where>
+    </delete>
+
+    <insert id="insert" parameterType="com.mc.redis.configuration.bean.AcPersonalBook">
+        INSERT INTO ac_personal_book (id, user_id, acct_book_id,
+                                      currency_type_id, balance, card_batch_id,
+                                      external_id, is_multi, is_defer,
+                                      activity_id, activity_name, acct_status,
+                                      reserved1, reserved2, reserved3,
+                                      reserved4, channel_id, gmt_expiry,
+                                      gmt_effective, gmt_init_expiry, gmt_create,
+                                      gmt_update, state, ext_info
+        )
+        VALUES (#{id,jdbcType=BIGINT}, #{userId,jdbcType=VARCHAR}, #{acctBookId,jdbcType=VARCHAR},
+                                       #{currencyTypeId,jdbcType=VARCHAR}, #{balance,jdbcType=DECIMAL},
+                                       #{cardBatchId,jdbcType=VARCHAR},
+                                       #{externalId,jdbcType=VARCHAR}, #{isMulti,jdbcType=TINYINT},
+                                       #{isDefer,jdbcType=TINYINT},
+                                       #{activityId,jdbcType=VARCHAR}, #{activityName,jdbcType=VARCHAR},
+            #{acctStatus,jdbcType=VARCHAR},
+            #{reserved1,jdbcType=VARCHAR}, #{reserved2,jdbcType=VARCHAR}, #{reserved3,jdbcType=VARCHAR},
+            #{reserved4,jdbcType=VARCHAR}, #{channelId,jdbcType=VARCHAR}, #{gmtExpiry,jdbcType=TIMESTAMP},
+            #{gmtEffective,jdbcType=TIMESTAMP}, #{gmtInitExpiry,jdbcType=TIMESTAMP}, #{gmtCreate,jdbcType=TIMESTAMP},
+                #{gmtUpdate,jdbcType=TIMESTAMP}, #{state,jdbcType=TINYINT}, #{extInfo,jdbcType=LONGVARCHAR}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.mc.redis.configuration.bean.AcPersonalBook">
+        insert into ac_personal_book
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="acctBookId != null">
+                acct_book_id,
+            </if>
+            <if test="currencyTypeId != null">
+                currency_type_id,
+            </if>
+            <if test="balance != null">
+                balance,
+            </if>
+            <if test="cardBatchId != null">
+                card_batch_id,
+            </if>
+            <if test="externalId != null">
+                external_id,
+            </if>
+            <if test="isMulti != null">
+                is_multi,
+            </if>
+            <if test="isDefer != null">
+                is_defer,
+            </if>
+            <if test="activityId != null">
+                activity_id,
+            </if>
+            <if test="activityName != null">
+                activity_name,
+            </if>
+            <if test="acctStatus != null">
+                acct_status,
+            </if>
+            <if test="reserved1 != null">
+                reserved1,
+            </if>
+            <if test="reserved2 != null">
+                reserved2,
+            </if>
+            <if test="reserved3 != null">
+                reserved3,
+            </if>
+            <if test="reserved4 != null">
+                reserved4,
+            </if>
+            <if test="channelId != null">
+                channel_id,
+            </if>
+            <if test="gmtExpiry != null">
+                gmt_expiry,
+            </if>
+            <if test="gmtEffective != null">
+                gmt_effective,
+            </if>
+            <if test="gmtInitExpiry != null">
+                gmt_init_expiry,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtUpdate != null">
+                gmt_update,
+            </if>
+            <if test="state != null">
+                state,
+            </if>
+            <if test="extInfo != null">
+                ext_info,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=VARCHAR},
+            </if>
+            <if test="acctBookId != null">
+                #{acctBookId,jdbcType=VARCHAR},
+            </if>
+            <if test="currencyTypeId != null">
+                #{currencyTypeId,jdbcType=VARCHAR},
+            </if>
+            <if test="balance != null">
+                #{balance,jdbcType=DECIMAL},
+            </if>
+            <if test="cardBatchId != null">
+                #{cardBatchId,jdbcType=VARCHAR},
+            </if>
+            <if test="externalId != null">
+                #{externalId,jdbcType=VARCHAR},
+            </if>
+            <if test="isMulti != null">
+                #{isMulti,jdbcType=TINYINT},
+            </if>
+            <if test="isDefer != null">
+                #{isDefer,jdbcType=TINYINT},
+            </if>
+            <if test="activityId != null">
+                #{activityId,jdbcType=VARCHAR},
+            </if>
+            <if test="activityName != null">
+                #{activityName,jdbcType=VARCHAR},
+            </if>
+            <if test="acctStatus != null">
+                #{acctStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="reserved1 != null">
+                #{reserved1,jdbcType=VARCHAR},
+            </if>
+            <if test="reserved2 != null">
+                #{reserved2,jdbcType=VARCHAR},
+            </if>
+            <if test="reserved3 != null">
+                #{reserved3,jdbcType=VARCHAR},
+            </if>
+            <if test="reserved4 != null">
+                #{reserved4,jdbcType=VARCHAR},
+            </if>
+            <if test="channelId != null">
+                #{channelId,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtExpiry != null">
+                #{gmtExpiry,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtEffective != null">
+                #{gmtEffective,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtInitExpiry != null">
+                #{gmtInitExpiry,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtUpdate != null">
+                #{gmtUpdate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="state != null">
+                #{state,jdbcType=TINYINT},
+            </if>
+            <if test="extInfo != null">
+                #{extInfo,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+
+    <insert id="batchInsertAcPersonBook" parameterType="java.util.List">
+        insert into ac_personal_book(user_id, acct_book_id, currency_type_id, balance, card_batch_id, external_id,
+        is_multi, is_defer, activity_id, activity_name, acct_status, reserved1, reserved2,
+        reserved3, reserved4, channel_id, gmt_expiry, gmt_effective, gmt_init_expiry, gmt_create,
+        gmt_update,ext_info) VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{item.userId},
+                #{item.acctBookId},
+                #{item.currencyTypeId},
+                #{item.balance},
+                #{item.cardBatchId},
+                #{item.externalId},
+                #{item.isMulti},
+                #{item.isDefer},
+                #{item.activityId},
+                #{item.activityName},
+                #{item.acctStatus},
+                #{item.reserved1},
+                #{item.reserved2},
+                #{item.reserved3},
+                #{item.reserved4},
+                #{item.channelId},
+                #{item.gmtExpiry},
+                #{item.gmtEffective},
+                #{item.gmtInitExpiry},
+                #{item.gmtCreate},
+                #{item.gmtUpdate},
+                #{item.extInfo},
+        </trim>
+    </foreach>
+    </insert>
+
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.mc.redis.configuration.bean.AcPersonalBook">
+        update ac_personal_book
+        <set>
+            <if test="acctBookId != null">
+                acct_book_id = #{acctBookId,jdbcType=VARCHAR},
+            </if>
+            <if test="currencyTypeId != null">
+                currency_type_id = #{currencyTypeId,jdbcType=VARCHAR},
+            </if>
+            <if test="balance != null">
+                balance = balance + #{balance,jdbcType=DECIMAL},
+            </if>
+            <if test="cardBatchId != null">
+                card_batch_id = #{cardBatchId,jdbcType=VARCHAR},
+            </if>
+            <if test="externalId != null">
+                external_id = #{externalId,jdbcType=VARCHAR},
+            </if>
+            <if test="isMulti != null">
+                is_multi = #{isMulti,jdbcType=TINYINT},
+            </if>
+            <if test="isDefer != null">
+                is_defer = #{isDefer,jdbcType=TINYINT},
+            </if>
+            <if test="activityId != null">
+                activity_id = #{activityId,jdbcType=VARCHAR},
+            </if>
+            <if test="activityName != null">
+                activity_name = #{activityName,jdbcType=VARCHAR},
+            </if>
+            <if test="acctStatus != null">
+                acct_status = #{acctStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="reserved1 != null">
+                reserved1 = #{reserved1,jdbcType=VARCHAR},
+            </if>
+            <if test="reserved2 != null">
+                reserved2 = #{reserved2,jdbcType=VARCHAR},
+            </if>
+            <if test="reserved3 != null">
+                reserved3 = #{reserved3,jdbcType=VARCHAR},
+            </if>
+            <if test="reserved4 != null">
+                reserved4 = #{reserved4,jdbcType=VARCHAR},
+            </if>
+            <if test="channelId != null">
+                channel_id = #{channelId,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtExpiry != null">
+                gmt_expiry = #{gmtExpiry,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtEffective != null">
+                gmt_effective = #{gmtEffective,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtInitExpiry != null">
+                gmt_init_expiry = #{gmtInitExpiry,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtUpdate != null">
+                gmt_update = #{gmtUpdate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="state != null">
+                state = #{state,jdbcType=TINYINT},
+            </if>
+            <if test="extInfo != null">
+                ext_info = #{extInfo,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where acct_book_id = #{acctBookId,jdbcType=VARCHAR}
+    </update>
+
+
+    <update id="updatePersonalBookByUserId" parameterType="com.mc.redis.configuration.bean.AcPersonalBook">
+        update ac_personal_book
+        <set>
+            <if test="acctStatus != null">
+                acct_status = #{acctStatus,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where state = '1'
+        <if test='userId != null and  userId != ""'>
+            AND user_id = #{userId}
+        </if>
+        <if test='isMulti != null and  isMulti != ""'>
+            AND is_multi = #{isMulti}
+        </if>
+    </update>
+
+
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.mc.redis.configuration.bean.AcPersonalBook">
+        UPDATE ac_personal_book
+        SET user_id          = #{userId,jdbcType=VARCHAR},
+            acct_book_id     = #{acctBookId,jdbcType=VARCHAR},
+            currency_type_id = #{currencyTypeId,jdbcType=VARCHAR},
+            balance          = #{balance,jdbcType=DECIMAL},
+            card_batch_id    = #{cardBatchId,jdbcType=VARCHAR},
+            external_id      = #{externalId,jdbcType=VARCHAR},
+            is_multi         = #{isMulti,jdbcType=TINYINT},
+            is_defer         = #{isDefer,jdbcType=TINYINT},
+            activity_id      = #{activityId,jdbcType=VARCHAR},
+            activity_name    = #{activityName,jdbcType=VARCHAR},
+            acct_status      = #{acctStatus,jdbcType=VARCHAR},
+            reserved1        = #{reserved1,jdbcType=VARCHAR},
+            reserved2        = #{reserved2,jdbcType=VARCHAR},
+            reserved3        = #{reserved3,jdbcType=VARCHAR},
+            reserved4        = #{reserved4,jdbcType=VARCHAR},
+            channel_id       = #{channelId,jdbcType=VARCHAR},
+            gmt_expiry       = #{gmtExpiry,jdbcType=TIMESTAMP},
+            gmt_effective    = #{gmtEffective,jdbcType=TIMESTAMP},
+            gmt_init_expiry  = #{gmtInitExpiry,jdbcType=TIMESTAMP},
+            gmt_create       = #{gmtCreate,jdbcType=TIMESTAMP},
+            gmt_update       = #{gmtUpdate,jdbcType=TIMESTAMP},
+            state            = #{state,jdbcType=TINYINT},
+            ext_info         = #{extInfo,jdbcType=LONGVARCHAR}
+        WHERE id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.mc.redis.configuration.bean.AcPersonalBook">
+        UPDATE ac_personal_book
+        SET user_id          = #{userId,jdbcType=VARCHAR},
+            acct_book_id     = #{acctBookId,jdbcType=VARCHAR},
+            currency_type_id = #{currencyTypeId,jdbcType=VARCHAR},
+            balance          = #{balance,jdbcType=DECIMAL},
+            card_batch_id    = #{cardBatchId,jdbcType=VARCHAR},
+            external_id      = #{externalId,jdbcType=VARCHAR},
+            is_multi         = #{isMulti,jdbcType=TINYINT},
+            is_defer         = #{isDefer,jdbcType=TINYINT},
+            activity_id      = #{activityId,jdbcType=VARCHAR},
+            activity_name    = #{activityName,jdbcType=VARCHAR},
+            acct_status      = #{acctStatus,jdbcType=VARCHAR},
+            reserved1        = #{reserved1,jdbcType=VARCHAR},
+            reserved2        = #{reserved2,jdbcType=VARCHAR},
+            reserved3        = #{reserved3,jdbcType=VARCHAR},
+            reserved4        = #{reserved4,jdbcType=VARCHAR},
+            channel_id       = #{channelId,jdbcType=VARCHAR},
+            gmt_expiry       = #{gmtExpiry,jdbcType=TIMESTAMP},
+            gmt_effective    = #{gmtEffective,jdbcType=TIMESTAMP},
+            gmt_init_expiry  = #{gmtInitExpiry,jdbcType=TIMESTAMP},
+            gmt_create       = #{gmtCreate,jdbcType=TIMESTAMP},
+            gmt_update       = #{gmtUpdate,jdbcType=TIMESTAMP},
+            state            = #{state,jdbcType=TINYINT}
+        WHERE id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByAcctBookId" parameterType="com.mc.redis.configuration.bean.AcPersonalBook">
+        update ac_personal_book
+        <set>
+            <if test="currencyTypeId != null">
+                currency_type_id = #{currencyTypeId,jdbcType=VARCHAR},
+            </if>
+            <if test="balance != null">
+                balance = #{balance,jdbcType=DECIMAL},
+            </if>
+            <if test="cardBatchId != null">
+                card_batch_id = #{cardBatchId,jdbcType=VARCHAR},
+            </if>
+            <if test="externalId != null">
+                external_id = #{externalId,jdbcType=VARCHAR},
+            </if>
+            <if test="isMulti != null">
+                is_multi = #{isMulti,jdbcType=TINYINT},
+            </if>
+            <if test="isDefer != null">
+                is_defer = #{isDefer,jdbcType=TINYINT},
+            </if>
+            <if test="activityId != null">
+                activity_id = #{activityId,jdbcType=VARCHAR},
+            </if>
+            <if test="activityName != null">
+                activity_name = #{activityName,jdbcType=VARCHAR},
+            </if>
+            <if test="acctStatus != null">
+                acct_status = #{acctStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="reserved1 != null">
+                reserved1 = #{reserved1,jdbcType=VARCHAR},
+            </if>
+            <if test="reserved2 != null">
+                reserved2 = #{reserved2,jdbcType=VARCHAR},
+            </if>
+            <if test="reserved3 != null">
+                reserved3 = #{reserved3,jdbcType=VARCHAR},
+            </if>
+            <if test="reserved4 != null">
+                reserved4 = #{reserved4,jdbcType=VARCHAR},
+            </if>
+            <if test="channelId != null">
+                channel_id = #{channelId,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtExpiry != null">
+                gmt_expiry = #{gmtExpiry,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtEffective != null">
+                gmt_effective = #{gmtEffective,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtInitExpiry != null">
+                gmt_init_expiry = #{gmtInitExpiry,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtUpdate != null">
+                gmt_update = #{gmtUpdate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="state != null">
+                state = #{state,jdbcType=TINYINT},
+            </if>
+            <if test="extInfo != null">
+                ext_info = #{extInfo,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where acct_book_id = #{acctBookId,jdbcType=VARCHAR} and user_id = #{userId,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateByAcctBookIds" parameterType="com.mc.redis.configuration.bean.AcPersonalBook">
+        update ac_personal_book
+        <set>
+            <if test="currencyTypeId != null">
+                currency_type_id = #{currencyTypeId,jdbcType=VARCHAR},
+            </if>
+            <if test="balance != null">
+                balance = balance - #{balance,jdbcType=DECIMAL},
+            </if>
+            <if test="cardBatchId != null">
+                card_batch_id = #{cardBatchId,jdbcType=VARCHAR},
+            </if>
+            <if test="externalId != null">
+                external_id = #{externalId,jdbcType=VARCHAR},
+            </if>
+            <if test="isMulti != null">
+                is_multi = #{isMulti,jdbcType=TINYINT},
+            </if>
+            <if test="isDefer != null">
+                is_defer = #{isDefer,jdbcType=TINYINT},
+            </if>
+            <if test="activityId != null">
+                activity_id = #{activityId,jdbcType=VARCHAR},
+            </if>
+            <if test="activityName != null">
+                activity_name = #{activityName,jdbcType=VARCHAR},
+            </if>
+            <if test="acctStatus != null">
+                acct_status = #{acctStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="reserved1 != null">
+                reserved1 = #{reserved1,jdbcType=VARCHAR},
+            </if>
+            <if test="reserved2 != null">
+                reserved2 = #{reserved2,jdbcType=VARCHAR},
+            </if>
+            <if test="reserved3 != null">
+                reserved3 = #{reserved3,jdbcType=VARCHAR},
+            </if>
+            <if test="reserved4 != null">
+                reserved4 = #{reserved4,jdbcType=VARCHAR},
+            </if>
+            <if test="channelId != null">
+                channel_id = #{channelId,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtExpiry != null">
+                gmt_expiry = #{gmtExpiry,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtEffective != null">
+                gmt_effective = #{gmtEffective,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtInitExpiry != null">
+                gmt_init_expiry = #{gmtInitExpiry,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtUpdate != null">
+                gmt_update = #{gmtUpdate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="state != null">
+                state = #{state,jdbcType=TINYINT},
+            </if>
+            <if test="extInfo != null">
+                ext_info = #{extInfo,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where acct_book_id = #{acctBookId,jdbcType=VARCHAR} and user_id = #{userId,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateBalanceByAcctBookId" >
+        update ac_personal_book
+        <set>
+            <if test="balance != null">
+                balance = balance + #{balance},
+            </if>
+        </set>
+        where acct_book_id = #{acctBookId}
+    </update>
+
+    <update id="updateByAcctBookIdSub" parameterType="com.mc.redis.configuration.bean.AcPersonalBook">
+        update ac_personal_book
+        <set>
+            <if test="acctBookId != null">
+                acct_book_id = #{acctBookId,jdbcType=VARCHAR},
+            </if>
+            <if test="currencyTypeId != null">
+                currency_type_id = #{currencyTypeId,jdbcType=VARCHAR},
+            </if>
+            <if test="balance != null">
+                balance = balance - #{balance,jdbcType=DECIMAL},
+            </if>
+            <if test="cardBatchId != null">
+                card_batch_id = #{cardBatchId,jdbcType=VARCHAR},
+            </if>
+            <if test="externalId != null">
+                external_id = #{externalId,jdbcType=VARCHAR},
+            </if>
+            <if test="isMulti != null">
+                is_multi = #{isMulti,jdbcType=TINYINT},
+            </if>
+            <if test="isDefer != null">
+                is_defer = #{isDefer,jdbcType=TINYINT},
+            </if>
+            <if test="activityId != null">
+                activity_id = #{activityId,jdbcType=VARCHAR},
+            </if>
+            <if test="activityName != null">
+                activity_name = #{activityName,jdbcType=VARCHAR},
+            </if>
+            <if test="acctStatus != null">
+                acct_status = #{acctStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="reserved1 != null">
+                reserved1 = #{reserved1,jdbcType=VARCHAR},
+            </if>
+            <if test="reserved2 != null">
+                reserved2 = #{reserved2,jdbcType=VARCHAR},
+            </if>
+            <if test="reserved3 != null">
+                reserved3 = #{reserved3,jdbcType=VARCHAR},
+            </if>
+            <if test="reserved4 != null">
+                reserved4 = #{reserved4,jdbcType=VARCHAR},
+            </if>
+            <if test="channelId != null">
+                channel_id = #{channelId,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtExpiry != null">
+                gmt_expiry = #{gmtExpiry,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtEffective != null">
+                gmt_effective = #{gmtEffective,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtInitExpiry != null">
+                gmt_init_expiry = #{gmtInitExpiry,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtUpdate != null">
+                gmt_update = #{gmtUpdate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="state != null">
+                state = #{state,jdbcType=TINYINT},
+            </if>
+            <if test="extInfo != null">
+                ext_info = #{extInfo,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where acct_book_id = #{acctBookId,jdbcType=VARCHAR} and user_id = #{userId,jdbcType=VARCHAR}
+    </update>
+
+    <select id="selectByAcctBookId" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from ac_personal_book
+        where state =1 and acct_book_id = #{acctBookId,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectByAcctBookIdAndUserid" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from ac_personal_book
+        where state =1 and acct_status = 1
+        <if test='acctBookId != null and  acctBookId != "" '>
+            AND acct_book_id = #{acctBookId}
+        </if>
+        <if test='userId != null and  userId != ""'>
+            AND user_id = #{userId}
+        </if>
+    </select>
+
+    <update id="updateByAcctBookIdAndAmount">
+        update ac_personal_book
+        <set>
+            <if test="amount != null">
+                balance = balance + #{amount,jdbcType=DECIMAL},
+                gmt_update = now()
+            </if>
+        </set>
+        where state = 1 and acct_book_id = #{acctBookId,jdbcType=VARCHAR} and user_id = #{userId,jdbcType=VARCHAR}
+    </update>
+
+
+    <update id="updateByAcctBookIdAmountExpiryDate">
+        update ac_personal_book
+        <set>
+            <if test="amount != null">
+                balance = balance + #{amount,jdbcType=DECIMAL},
+                gmt_update = now(),
+            </if>
+            <if test="expiryDate != null">
+                gmt_expiry = #{expiryDate,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where state = 1 and acct_book_id = #{acctBookId,jdbcType=VARCHAR} and user_id = #{userId,jdbcType=VARCHAR}
+    </update>
+
+
+    <select id="selectByUserIdAndCurrencyTypeIds" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/> ,
+        <include refid="Blob_Column_List" />
+        from ac_personal_book
+        where state = 1
+        <if test='userId != null '>
+            AND user_id = #{userId}
+        </if>
+        <if test="currencyTypeIds != null and currencyTypeIds.size()>0">
+            AND currency_type_id IN
+            <foreach collection="currencyTypeIds" index="index" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="selectByUserIdAndCurrencyTypeIdsAndAcctStatus" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/> ,
+        <include refid="Blob_Column_List" />
+        from ac_personal_book
+        where state = 1 and gmt_expiry > now()
+        <if test='userId != null '>
+            AND user_id = #{userId}
+        </if>
+        <if test='acctStatus != null '>
+            AND acct_status = #{acctStatus,jdbcType=VARCHAR}
+        </if>
+        <if test="currencyTypeIds != null and currencyTypeIds.size()>0">
+            AND currency_type_id IN
+            <foreach collection="currencyTypeIds" index="index" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if> limit 2000
+    </select>
+    <select id="batchQueryAcPersonalBookList" parameterType="java.lang.Object" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ac_personal_book
+        WHERE state =1 and user_id = #{userId}
+        <foreach collection="list" item="item" separator="OR" open="and (" close=")">
+            acct_book_id = #{item}
+        </foreach>
+    </select>
+
+
+    <select id="batchGetByUserIdAndCurrencyTypeId" resultMap="BaseResultMap">
+        select
+        user_id, acct_book_id, currency_type_id, balance, card_batch_id, external_id,
+        is_multi, is_defer, activity_id, activity_name, acct_status, reserved1, reserved2,
+        reserved3, reserved4, channel_id, gmt_expiry, gmt_effective, gmt_init_expiry, gmt_create,
+        gmt_update, state ,ext_info
+        from ac_personal_book
+        WHERE state =1
+        and user_id = #{userId}
+        and acct_status = '1'
+        and balance > 0
+        and gmt_expiry > now()
+        and now() > gmt_effective
+        <foreach collection="list" item="item" separator="OR" open="and (" close=")">
+            currency_type_id = #{item}
+        </foreach>
+        ORDER by gmt_expiry ASC
+    </select>
+
+
+    <select id="batchGetByUserIdAndCurrencyTypeIdAndAcctBookId" resultMap="BaseResultMap">
+        select
+        user_id, acct_book_id, currency_type_id, balance, card_batch_id, external_id,
+        is_multi, is_defer, activity_id, activity_name, acct_status, reserved1, reserved2,
+        reserved3, reserved4, channel_id, gmt_expiry, gmt_effective, gmt_init_expiry, gmt_create,
+        gmt_update, state ,ext_info
+        from ac_personal_book
+        WHERE state =1
+        and user_id = #{userId}
+        and acct_status = '1'
+        and balance > 0
+        and gmt_expiry > now()
+        and now() > gmt_effective
+        <if test="acctBookId != null and acctBookId != ''">
+            AND acct_book_id = #{acctBookId,jdbcType=VARCHAR}
+        </if>
+        <foreach collection="list" item="item" separator="OR" open="and (" close=")">
+            currency_type_id = #{item}
+        </foreach>
+        ORDER by gmt_expiry ASC
+    </select>
+
+
+    <select id="getYestardayUnUsefulBook" resultMap="BaseResultMap">
+        select
+        user_id, acct_book_id, currency_type_id, balance, card_batch_id, external_id,
+        is_multi, is_defer, activity_id, activity_name, acct_status, reserved1, reserved2,
+        reserved3, reserved4, channel_id, gmt_expiry, gmt_effective, gmt_init_expiry, gmt_create,
+        gmt_update, state ,ext_info
+        from ac_personal_book
+        where <![CDATA[ gmt_update >= ]]> #{yestarday} and  <![CDATA[ gmt_update < ]]> #{today}
+        and (acct_status = 0 or <![CDATA[ gmt_expiry <]]> #{today} or <![CDATA[ balance= ]]> 0) and is_multi = 1 limit 10000000
+    </select>
+
+    <select id="getUnUsefulHistoryBook" resultMap="BaseResultMap">
+        select
+        user_id, acct_book_id, currency_type_id, balance, card_batch_id, external_id,
+        is_multi, is_defer, activity_id, activity_name, acct_status, reserved1, reserved2,
+        reserved3, reserved4, channel_id, gmt_expiry, gmt_effective, gmt_init_expiry, gmt_create,
+        gmt_update, state,ext_info
+        from ac_personal_book
+        where <![CDATA[ gmt_update < ]]> #{today}
+        and (acct_status = 0 or <![CDATA[ gmt_expiry <]]> #{today} or <![CDATA[ balance= ]]> 0) and is_multi = 1 limit 10000000
+    </select>
+
+    <insert id="insertAction" parameterType="com.mc.redis.configuration.bean.AcPersonalBook">
+        INSERT INTO ac_personal_book (user_id, acct_book_id,
+                                      currency_type_id, balance, card_batch_id,
+                                      external_id, is_multi, is_defer,
+                                      activity_id, activity_name, acct_status,
+                                      reserved1, reserved2, reserved3,
+                                      reserved4, channel_id, gmt_expiry,
+                                      gmt_effective, gmt_init_expiry, gmt_create,
+                                      gmt_update, state, ext_info
+        )
+        VALUES (#{userId,jdbcType=VARCHAR}, #{acctBookId,jdbcType=VARCHAR},
+                                       #{currencyTypeId,jdbcType=VARCHAR}, #{balance,jdbcType=DECIMAL},
+                                       #{cardBatchId,jdbcType=VARCHAR},
+                                       #{externalId,jdbcType=VARCHAR}, #{isMulti,jdbcType=TINYINT},
+                                       #{isDefer,jdbcType=TINYINT},
+                                       #{activityId,jdbcType=VARCHAR}, #{activityName,jdbcType=VARCHAR},
+            #{acctStatus,jdbcType=VARCHAR},
+            #{reserved1,jdbcType=VARCHAR}, #{reserved2,jdbcType=VARCHAR}, #{reserved3,jdbcType=VARCHAR},
+            #{reserved4,jdbcType=VARCHAR}, #{channelId,jdbcType=VARCHAR}, #{gmtExpiry,jdbcType=TIMESTAMP},
+            #{gmtEffective,jdbcType=TIMESTAMP}, #{gmtInitExpiry,jdbcType=TIMESTAMP}, #{gmtCreate,jdbcType=TIMESTAMP},
+            #{gmtUpdate,jdbcType=TIMESTAMP}, #{state,jdbcType=TINYINT}, #{extInfo,jdbcType=LONGVARCHAR}
+        )
+    </insert>
+
+    <!-- 删除个人账本，单个 -->
+    <delete id="delPersonalBook" parameterType="java.lang.String">
+        DELETE FROM ac_personal_book
+        WHERE acct_book_id = #{acctBookId, jdbcType=VARCHAR}
+    </delete>
+
+
+    <delete id = "batchDeleteCleanData" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" separator=";">
+            DELETE FROM ac_personal_book
+            where acct_book_id = #{item.acctBookId,jdbcType=VARCHAR} AND user_id = #{item.userId,jdbcType=VARCHAR}
+        </foreach>
+    </delete>
+
+    <delete id = "deleteByAccountBookId" parameterType="com.mc.redis.configuration.bean.AcPersonalBook">
+        DELETE from ac_personal_book where acct_book_id = #{acctBookId} and user_id = #{userId};
+    </delete>
+
+
+    <update id="updateBalanceByAcctBookIdAndUserId" >
+        update ac_personal_book
+        <set>
+            <if test="balance != null">
+                balance = balance + #{balance},
+            </if>
+            <if test="gmtUpdate != null">
+                gmt_update = #{gmtUpdate, jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where acct_book_id = #{acctBookId}  and user_id = #{userId,jdbcType=VARCHAR}
+    </update>
+
+    <!-- batchUpdateByAcctBookId 批量修改账本状态 -->
+    <update id="batchUpdateByAcctBookId">
+        UPDATE ac_personal_book
+        SET gmt_update = #{updateTime, jdbcType=TIMESTAMP}, acct_status = #{status, jdbcType=VARCHAR}
+        <where>
+            user_id = #{userId, jdbcType=VARCHAR}
+            <if test="ids != null and ids.size() > 0">
+                AND acct_book_id in
+                <foreach collection="ids" item="id" separator="," open="(" close=")">
+                    #{id, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
+    </update>
+    <update id="updateByAcctBookIdAndDealAmount">
+        update ac_personal_book
+        <set>
+            <if test="amount != null">
+                balance = balance - #{amount,jdbcType=DECIMAL},
+                gmt_update = now()
+            </if>
+        </set>
+        where state = 1 and acct_book_id = #{acctBookId,jdbcType=VARCHAR} and user_id = #{userId,jdbcType=VARCHAR}
+    </update>
+
+    <select id="getByUserIdAndCardNo" resultMap="BaseResultMap">
+        select
+        user_id, acct_book_id, currency_type_id, balance, card_batch_id, external_id,
+        is_multi, is_defer, activity_id, activity_name, acct_status, reserved1, reserved2,
+        reserved3, reserved4, channel_id, gmt_expiry, gmt_effective, gmt_init_expiry, gmt_create,
+        gmt_update, state
+        from ac_personal_book
+        WHERE state =1
+        and user_id = #{userId}
+        and acct_status = '1'
+        and balance > 0
+        and gmt_expiry > now()
+        and now() > gmt_effective
+        <if test="cardNo != null and cardNo != ''">
+            AND external_id = #{cardNo,jdbcType=VARCHAR}
+        </if>
+        <if test="acctBookId != null and acctBookId != ''">
+            AND acct_book_id = #{acctBookId,jdbcType=VARCHAR}
+        </if>
+        ORDER by gmt_expiry ASC
+    </select>
+</mapper>

@@ -1,0 +1,18 @@
+redis:
+  cluster:
+    nodes: 10.181.0.44:6879
+    timeout: 2000
+    maxAttempts: 5
+    maxWaitMillis: -1
+    maxTotal: 8
+    minIdle: 0
+    maxIdle: 888
+
+spring:
+  userBusinessDatasource:
+    url: jdbc:mysql://10.181.0.110:30109/accbook?relaxAutoCommit=true&zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&autoReconnect=true
+    username: accbook
+    password: Zjs182@13112p
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+

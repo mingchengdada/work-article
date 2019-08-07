@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mc.redis.configuration.mapper.AcBillDepositFlowMapper">
+    <resultMap id="BaseResultMap" type="com.mc.redis.configuration.bean.AcBillDepositFlow">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="bill_flow_id" jdbcType="VARCHAR" property="billFlowId"/>
+        <result column="acct_book_id" jdbcType="VARCHAR" property="acctBookId"/>
+        <result column="book_type" jdbcType="VARCHAR" property="bookType"/>
+        <result column="bill_type" jdbcType="VARCHAR" property="billType"/>
+        <result column="amount" jdbcType="DECIMAL" property="amount"/>
+        <result column="before_amount" jdbcType="DECIMAL" property="beforeAmount"/>
+        <result column="after_amount" jdbcType="DECIMAL" property="afterAmount"/>
+        <result column="inner_id" jdbcType="VARCHAR" property="innerId"/>
+        <result column="external_id" jdbcType="VARCHAR" property="externalId"/>
+        <result column="op_code" jdbcType="VARCHAR" property="opCode"/>
+        <result column="platform" jdbcType="VARCHAR" property="platform"/>
+        <result column="portal_type" jdbcType="VARCHAR" property="portalType"/>
+        <result column="product_line" jdbcType="VARCHAR" property="productLine"/>
+        <result column="reserved1" jdbcType="VARCHAR" property="reserved1"/>
+        <result column="reserved2" jdbcType="VARCHAR" property="reserved2"/>
+        <result column="reserved3" jdbcType="VARCHAR" property="reserved3"/>
+        <result column="reserved4" jdbcType="VARCHAR" property="reserved4"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_update" jdbcType="TIMESTAMP" property="gmtUpdate"/>
+        <result column="state" jdbcType="TINYINT" property="state"/>
+        <result column="currency_type_id" jdbcType="VARCHAR" property="currencyTypeId"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.mc.redis.configuration.bean.AcBillDepositFlow">
+        <result column="ext_info" jdbcType="LONGVARCHAR" property="extInfo"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, user_id, bill_flow_id, acct_book_id, book_type, bill_type, amount, before_amount, 
+    after_amount, inner_id, external_id, op_code, platform, portal_type, product_line,
+    reserved1, reserved2, reserved3, reserved4, gmt_create, gmt_update, state, currency_type_id
+  </sql>
+    <sql id="Blob_Column_List">
+    ext_info,remark
+  </sql>
+    <select id="selectDepositByUserIdAndBookId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ac_bill_deposit_flow
+        where state = 1 and user_id = #{userId,jdbcType=VARCHAR} and acct_book_id = #{bookId} and reserved1 = #{bookId1}
+    </select>
+
+
+</mapper>
